@@ -2,11 +2,11 @@ const ethers = require('ethers');
 const crypto = require('crypto');
 
 // Replace with your actual Alchemy API key
-const alchemyApiKey = '';
-const provider = new ethers.providers.JsonRpcProvider( )
+const alchemyApiKey = 'APIKEY';
+const provider = new ethers.providers.JsonRpcProvider( RPC-URL )
 
 // Replace 'yourWordList' with your own array of words
-const yourWordList = []
+const yourWordList = [YOUWORDLIST]
 
 function generateRandomMnemonic(wordList) {
   const mnemonicArray = [];
